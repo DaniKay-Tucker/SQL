@@ -1,0 +1,23 @@
+CREATE TABLE baby_store (id Integer primary key, item Text, brand Text,price Integer, quantity Integer );
+
+Insert into baby_store values (1, "Stroller", "Summer Infant", 139.99, 33);
+Insert into baby_store values (2, "Crib", "Oxford", 229.99, 12);
+Insert into baby_store values (3, "Crib", "Delta", 149.99, 22);
+Insert into baby_store values (4, "Highchair", "Delta", 99.99, 25);
+Insert into baby_store values (5, "Carseat", "Safety First", 169.99, 40);
+Insert into baby_store values (6, "Onsies", "Adorbs", 12.99, 52);
+Insert into baby_store values (8, "Wipes","7thgen", 7.99, 22);
+Insert into baby_store values (9, "Wipes","Huggies", 10.99, 32);
+Insert into baby_store values (10, "Diapers","Pampers", 12.99, 22);
+Insert into baby_store values (11, "Diapers","Huggies", 10.99, 42);
+Insert into baby_store values (12, "Diapers","7thgen", 14.99, 14);
+Insert into baby_store values (13, "bottle","bottleco", 3.99, 22);
+Insert into baby_store values (14, "bottle","babyco", 4.99, 19);
+Insert into baby_store values (15, "bottle","totz", 2.99, 12);
+
+Select * from baby_store
+order by price;
+
+Select * from baby_store
+where item = "diaper" and price = 10.99
+order by price;
