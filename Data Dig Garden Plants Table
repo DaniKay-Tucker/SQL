@@ -1,0 +1,49 @@
+CREATE TABLE garden_plants (
+name TEXT Primary Key, 
+plant_type TEXT,
+sun Text,
+in_stock Integer
+);
+
+INSERT INTO garden_plants values("Beet", "root veg", "full", 12);
+INSERT INTO garden_plants values("Broccoli", "veg", "full",30);
+INSERT INTO garden_plants values("Cucumber", "fruit", "partial", 17);
+INSERT INTO garden_plants values("Potato", "root veg", "partial", 23);
+INSERT INTO garden_plants values("Kale", "leaf veg", "full", 16);
+INSERT INTO garden_plants values("Leek", "veg", "full", 29);
+INSERT INTO garden_plants values("Lettuce", "veg", "full", 10);
+INSERT INTO garden_plants values("Onion", "veg", "full", 12);
+INSERT INTO garden_plants values("Radish", "root veg", "full", 43);
+INSERT INTO garden_plants values("Sweet Corn", "veg", "full", 31);
+INSERT INTO garden_plants values("Tomato", "fruit", "full", 19);
+INSERT INTO garden_plants values("Spinach", "leaf veg", "shade", 67);
+INSERT INTO garden_plants values("Basil", "herb", "full", 16);
+INSERT INTO garden_plants values("Sunflower", "fruit", "full", 23);
+INSERT INTO garden_plants values("Red Pepper", "fruit", "full", 19);
+INSERT INTO garden_plants values("Lemongrass", "herb", "full", 13);
+INSERT INTO garden_plants values("Pumpkin", "fruit", "full", 34);
+INSERT INTO garden_plants values("Strawberry", "fruit", "full", 50); 
+INSERT INTO garden_plants values("Blueberry", "fruit", "full", 12);
+INSERT INTO garden_plants values("Cilantro", "herb", "full", 45);
+
+select count(*) from garden_plants;
+
+select plant_type, count(*),
+case 
+when plant_type = "fruit" then "Delicious!"
+when plant_type = "herb" then "Healthy"
+else "A vegetable"
+end as "tastes_like"
+from garden_plants
+group by plant_type;
+
+select count(*) from garden_plants
+where plant_type = "veg"
+group by sun
+having sun = "full";
+
+select name, in_stock from garden_plants
+where in_stock <= 20 and plant_type = "fruit";
+
+select min(in_stock) as min_in_stock from garden_plants;
+select round(avg(in_stock)) as avg_in_stock from garden_plants;
