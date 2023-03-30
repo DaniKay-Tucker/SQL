@@ -1,0 +1,60 @@
+create table quinn_bridgerton_books (book_in_series Integer Primary KEY, title TEXT);
+
+create table main_char (full_name Text, book_num Integer, true_love_id Integer);
+
+Create table true_love_info ( full_name Text, book Integer, love_id Integer);
+
+INSERT INTO quinn_bridgerton_books values
+(1, "THE DUKE & I");
+INSERT INTO quinn_bridgerton_books values
+(2, "THE VISCOUNT WHO LOVED ME");
+INSERT INTO quinn_bridgerton_books values
+(3, "AN OFFER FROM A GENTLEMAN");
+INSERT INTO quinn_bridgerton_books values
+(4, "ROMANCING MISTER BRIDGERTON");
+INSERT INTO quinn_bridgerton_books values
+(5, "TO SIR PHILIP, WITH LOVE");
+INSERT INTO quinn_bridgerton_books values
+(6, "WHEN HE WAS WICKED");
+INSERT INTO quinn_bridgerton_books values
+(7, "IT'S IN HIS KISS");
+INSERT INTO quinn_bridgerton_books values
+(8, "ON THE WAY TO THE WEDDING");
+
+INSERT INTO main_char values("Daphne Bridgerton", 1, 01);
+INSERT INTO main_char values("Anthony Bridgerton", 2, 02);
+INSERT INTO main_char values("Benedict Bridgerton", 3, 03);
+INSERT INTO main_char values("Colin Bridgerton", 4, 04);
+INSERT INTO main_char values("Eloise Bridgerton", 5, 05);
+INSERT INTO main_char values("Francesca Bridgerton", 6, 06);
+INSERT INTO main_char values("Hyacinth Bridgerton", 7, 07);
+INSERT INTO main_char values("Gregory Bridgerton", 8, 08);
+
+
+INSERT INTO true_love_info values("Simon Basset", 1, 01);
+INSERT INTO true_love_info values("Kate Sheffield", 2, 02);
+INSERT INTO true_love_info values("Sophie Beckett", 3, 03);
+INSERT INTO true_love_info values("Penelope Featherington", 4, 04);
+INSERT INTO true_love_info values("Philip Crane", 5, 05);
+INSERT INTO true_love_info values("Michael Sterling", 6, 06);
+INSERT INTO true_love_info values("Gareth St. Clair", 7, 07);
+INSERT INTO true_love_info values("Lucy Abernathy", 8, 08);
+
+select mc.full_name as main_char, 
+tlove.full_name as true_love  
+from main_char mc 
+join 
+true_love_info tlove 
+on mc.true_love_id = tlove.love_id;
+
+select 
+qbb.title as title, 
+mc.full_name as main_char, 
+tlove.full_name as true_love
+from quinn_bridgerton_books qbb
+join 
+main_char mc
+on qbb.book_in_series = mc.book_num
+join 
+true_love_info tlove
+on mc.true_love_id = tlove.love_id;
