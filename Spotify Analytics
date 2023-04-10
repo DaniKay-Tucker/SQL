@@ -44,14 +44,10 @@ SELECT dense_rank() OVER (ORDER BY popularity DESC) AS top_songs,
 # Finally after gathering information on the average and max duration of the tracks I preformed a query with a case expression to categorize the duration as 
 # either short, medium or long.
 
-Select 
-artist_name,
-track_name,
-duration_ms,
-case
-when duration_ms < 177488.4 then 'short'
-when duration_ms > 177488.4 and duration_ms < 227120 then 'medium'
-else 'long'
-end song_length
-FROM BIT_DB.Spotifydata
-order by duration_ms;
+SELECT artist_name,
+       track_name,
+       duration_ms,
+       CASE WHEN duration_ms < 177488.4 THEN 'short' WHEN duration_ms > 177488.4 AND 
+                                                          duration_ms < 227120 THEN 'medium' ELSE 'long' END song_length
+  FROM BIT_DB.Spotifydata
+ ORDER BY duration_ms;
