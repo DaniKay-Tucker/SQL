@@ -1,0 +1,189 @@
+# Making queries on a music sales database to determine information about billing, sales and revenue.
+
+/*Chinook Queries*/
+/*1. Show Customers (their full names, customer ID, and country) who are not in the US.*/
+SELECT customerID,
+       LastName, 
+       FirstName,
+       country
+  FROM chinook.customers
+ WHERE country <> 'USA';
+
+/*2. Show only the Customers from Brazil.*/
+SELECT *
+  FROM chinook.customers
+ WHERE country = 'Brazil';
+
+
+/*3. Find the Invoices of customers who are from Brazil. */
+SELECT cust.LastName,
+       cust.FirstName,
+       inv.BillingCountry,
+       inv.Invoiceid,
+       inv.InvoiceDate
+  FROM chinook.invoices inv
+       LEFT JOIN
+       chinook.customers cust ON cust.Customerid = inv.Customerid
+ WHERE country = 'Brazil';
+
+/*4. Show the Employees who are Sales Agents*/
+SELECT *
+  FROM chinook.employees
+ WHERE title LIKE '%agent';
+
+/*5. Find a unique list of billing countries from the Invoice table.*/
+SELECT DISTINCT BillingCountry
+  FROM chinook.invoices;
+
+/*6. Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.*/
+SELECT emp.lastName,
+       emp.firstName,
+       inv.invoiceid
+  FROM chinook.employees emp
+       JOIN
+       chinook.customers cust ON emp.employeeid = cust.supportRepid
+       JOIN
+       chinook.invoices inv ON inv.customerid = cust.customerid;
+
+/*7. Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.*/
+SELECT inv.billingCountry,
+       cust.lastName,
+       cust.firstName,
+       emp.lastName AS empLastName,
+       emp.firstName AS empFirstName,
+       inv.total
+  FROM chinook.employees emp
+       JOIN
+       chinook.customers cust ON emp.employeeid = cust.supportRepid
+       JOIN
+       chinook.invoices inv ON inv.customerid = cust.customerid;
+   
+/*8. How many Invoices were there in 2009?*/
+SELECT count(invoiceDate) as total_invoice_2009
+  FROM chinook.invoices
+ WHERE invoiceDate LIKE '2009%';
+
+
+/*9. What are the total sales for 2009?*/
+Select round(sum(total), 2) as total_2009
+from chinook.invoices
+where invoiceDate like '2009%';
+
+/*10. Write a query that includes the purchased track name with each invoice line ID.*/
+SELECT tracks.Name AS trackName,
+       i.invoicelineid
+  FROM chinook.invoice_items i
+       JOIN
+       chinook.tracks tracks ON tracks.trackid = i.trackid
+       order by i.invoicelineid;
+
+/*11. Write a query that includes the purchased track name AND artist name with each invoice line ID.*/
+SELECT artist.Name AS artistName,
+       track.Name AS trackName,
+       invi.invoicelineid
+  FROM chinook.invoice_items invi
+       JOIN
+       chinook.tracks track ON invi.trackid = track.trackid
+       JOIN
+       chinook.albums album ON album.albumid = track.albumid
+       JOIN
+       chinook.artists artist ON artist.artistid = album.artistid;
+
+/*12. Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.*/
+SELECT track.Name AS trackName,
+       album.title AS albumTitle,
+       genre.Name AS genre,
+       medtype.Name AS mediaType
+  FROM chinook.tracks track
+       JOIN
+       chinook.albums album ON track.albumid = album.albumid
+       JOIN
+       chinook.media_types medtype ON track.mediatypeid = medtype.mediatypeid
+       JOIN
+       chinook.genres genre ON track.genreid = genre.genreid;
+       
+/*13. Show the total sales made by each sales agent.*/
+SELECT emp.lastName AS empLastName,
+       emp.firstName AS empFirstName,
+       round(sum(inv.total), 2) AS totalSales
+  FROM chinook.employees emp
+       JOIN
+       chinook.customers cust ON emp.employeeid = cust.supportrepid
+       JOIN
+       invoices inv ON inv.customerid = cust.customerid
+ GROUP BY emp.employeeid;
+
+/*14. Which sales agent made the most dollars in sales in 2009?*/
+SELECT emp.lastName as empLastName,
+       emp.firstName as empFirstName,
+       round(sum(inv.total), 2) as totalSales
+  FROM chinook.employees emp
+       JOIN
+       chinook.customers cust ON emp.employeeid = cust.supportrepid
+       JOIN
+       invoices inv ON inv.customerid = cust.customerid
+Where inv.invoiceDate like '2009%'
+Group by emp.employeeid
+order by totalSales desc
+limit 1;
+
+# More Queries on chinook database
+/*1. How many orders has each country placed*/
+SELECT BillingCountry,
+       count(BillingCountry) as numofOrders 
+  FROM chinook.invoices
+ GROUP BY BillingCountry;
+
+/*2. How many sales per each employee*/
+SELECT emp.lastName,
+       emp.firstName,
+       count(inv.invoiceid) AS NumofSales
+  FROM chinook.employees emp
+       JOIN
+       chinook.customers cust ON emp.employeeid = cust.SupportRepid
+       JOIN
+       chinook.invoices inv ON inv.customerid = cust.customerid
+ GROUP BY emp.employeeid;
+
+
+/*3.How much did revenue did each genre generate?*/
+SELECT g.Name AS genre,
+       round(sum(inv.total), 2) AS totalSales
+  FROM chinook.invoices inv
+       JOIN
+       chinook.invoice_items items ON items.invoiceid = inv.invoiceid
+       JOIN
+       chinook.tracks t ON items.trackid = t.trackid
+       JOIN
+       chinook.genres g ON g.genreid = t.genreid
+ GROUP BY g.Name;
+
+
+/*4. Show the Invoice Total for each customer and include Country, and Sales Agent*/
+SELECT inv.billingCountry,
+       cust.lastName,
+       cust.firstName,
+       emp.lastName AS empLastName,
+       emp.firstName AS empFirstName,
+       round(sum(inv.total),2) as totalSales
+  FROM chinook.employees emp
+       JOIN
+       chinook.customers cust ON emp.employeeid = cust.supportRepid
+       JOIN
+       chinook.invoices inv ON inv.customerid = cust.customerid
+       group by cust.customerid
+       order by inv.billingCountry;
+
+/*5. Show which Tracks and Artists were purchased on each invoice*/
+SELECT inv.invoiceid,
+       tracks.Name AS trackName, artist.Name as artistName
+  FROM chinook.invoices inv
+       JOIN
+       invoice_items items ON items.invoiceid = inv.invoiceid
+       JOIN
+       chinook.tracks tracks ON tracks.trackid = items.trackid
+       join 
+       chinook.albums album on tracks.albumid = album.albumid
+       join
+       chinook.artists artist on album.artistid = artist.artistid
+ ORDER BY inv.invoiceid;
