@@ -1,0 +1,67 @@
+--Working with DDL and DML on my company_db in MySQL Workbench;
+
+USE company_db;
+
+--Using DDL to CREATE, DROP, ALTER, TRUNCATE, and RENAME within company_db:
+
+-- Creating a table and altering 
+CREATE TABLE employees (
+    last_name TEXT,
+    first_name TEXT,
+    hire_date DATE,
+    end_date DATE,
+    salary INT
+);
+
+-- since I knew there was a way to add a column using AFTER I researched how to add a column at beginning of table:
+ALTER TABLE employees
+ADD COLUMN emp_no INT PRIMARY KEY FIRST;
+
+ALTER TABLE employees
+RENAME emp_info;
+
+TRUNCATE emp_info;
+
+CREATE TABLE customers (
+    emp_no INT PRIMARY KEY,
+    last_name TEXT,
+    first_name TEXT,
+    hire_date DATE,
+    end_date DATE,
+    salary INT
+);
+
+ALTER TABLE customer_info 
+ADD COLUMN job_title TEXT;
+
+ALTER TABLE customer_info 
+DROP COLUMN job_title;
+
+ALTER TABLE customer_info 
+ADD COLUMN customer_name TEXT AFTER customer_id; 
+
+-- Using DML to SELECT, INSERT, DELETE, and UPDATE within company_db:
+SELECT 
+    *
+FROM
+    customer_info ci
+        LEFT JOIN
+    customers c ON ci.customer_id = c.customer_id;
+	
+UPDATE customer_info 
+SET 
+    phone = '123-456-7890'
+WHERE
+    customer_id = 20;
+
+UPDATE customer_info 
+SET 
+    job_title = 'Inventory Specialist'
+WHERE
+    customer_id BETWEEN 11 AND 17;
+
+INSERT INTO emp_info
+values (1001, "Smith", "Sally", '2020-01-01', current_date(), 120000), 
+(1002, "Smyth", "Stephanie", '2021-02-05', current_date(), 130000);
+	
+Delete from emp_info where emp_no = '1001';
