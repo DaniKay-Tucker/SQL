@@ -1,0 +1,123 @@
+# Steam Dataset: Downloaded "Steam games dataset" from Kaggle
+
+# Cleaning Steam Data:
+-- Using Excel to check for duplicates, changing empty cells to NULL also noticed that there were cells with random characters so I used Power Query 
+-- to create a new column with these values removed. 
+-- this created 2 NULLs in game_title which I corrected by simulating that I reached out to stake holders for information instead of deleting the record.
+-- When I imported the file into MySQL Workbench the id col had random characters though this issue did not exist in the Excel file...
+-- I fixed this error by copying the strange characters and then renaming the column with ALTER statement.
+
+ALTER TABLE steam_data
+RENAME COLUMN ï»¿id to id;
+
+# Finding NULLs:
+
+SELECT 
+    id, game_title
+FROM
+    steam_data
+WHERE
+    game_title IS NULL;
+
+# Updating NULLs: 
+
+UPDATE steam_data 
+SET 
+    game_title = 'London Nights'
+WHERE
+    id = '1340330';
+	
+# Performing Analytics:
+
+-- Quering to find which genre of games had the most released games between those that were tagged with horror, strategy or relaxing? 
+
+SELECT 
+    *
+FROM
+    steam_data
+WHERE
+    tags LIKE '%horror%';
+
+-- Returns: 
+LIKE '%horror%' = 133
+LIKE '%Strategy%' = 533
+LIKE '%relaxing%' = 486
+
+-- Which of these types of games have highest reviewer_rating percentage?
+
+SELECT 
+    MAX(reviewer_rating) AS highest_rating
+FROM
+    steam_data;
+	
+SELECT 
+    *
+FROM
+    steam_data
+WHERE
+    tags LIKE '%horror%'
+HAVING reviewer_rating = 9;
+
+-- Returns:
+LIKE '%horror%' results = 13  = 6.7%
+LIKE '%Strategy%' = 13 = 2.4%
+LIKE '%relaxing%' = 18 = 3.7%
+Therefore horror has the highest percentage of positive reviewer ratings.
+
+-- What game has the highest positivity_ratio? (I used an inner query to make sure that there weren't multiple occurances.)
+
+SELECT 
+    game_title, positivity_ratio
+FROM
+    steam_data
+WHERE
+    positivity_ratio IN (SELECT 
+            MAX(positivity_ratio)
+        FROM
+            steam_data);
+
+-- What game has the lowest positivity_ratio? Solving by excluding NULLs:
+SELECT 
+    game_title, positivity_ratio
+FROM
+    steam_data
+WHERE
+    positivity_ratio IS NOT NULL
+ORDER BY positivity_ratio
+LIMIT 10;
+
+-- What game has the lowest positivity_ratio? Solving with an inner query:
+SELECT 
+    game_title, positivity_ratio
+FROM
+    steam_data
+WHERE
+    positivity_ratio IN (SELECT 
+            MIN(positivity_ratio)
+        FROM
+            steam_data);
+			
+-- How many titles are in each group of reviewer_rating?
+SELECT 
+    reviewer_rating, COUNT(reviewer_rating)
+FROM
+    steam_data
+WHERE
+    reviewer_rating IS NOT NULL
+GROUP BY reviewer_rating
+ORDER BY reviewer_rating DESC;
+			
+-- Create a case statement for the games based on the reviewer_ratings: 
+SELECT 
+    game_title,
+    reviewer_rating,
+    CASE
+        WHEN reviewer_rating > 7 THEN 'Top Rated Game'
+        WHEN reviewer_rating BETWEEN 6 AND 7 THEN 'Well Rated Game'
+        ELSE 'Low Ratings'
+    END AS game_rated
+FROM
+    steam_data
+WHERE
+    reviewer_rating IS NOT NULL
+ORDER BY reviewer_rating;
