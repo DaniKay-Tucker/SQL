@@ -1,0 +1,103 @@
+# PROCEDURES:
+-- Here I created a procedure to extract all the employees that make over $100,000:
+DELIMITER //
+CREATE PROCEDURE emp_over_100k()
+BEGIN
+	SELECT * FROM emp_info
+	where salary > 100000;
+END //
+Delimiter ;
+
+CALL practice_db.emp_over_100k();
+
+-- Created a procedure that gathers the total amount charged to each customer: 
+DELIMITER //
+CREATE PROCEDURE total_billed()
+BEGIN
+SELECT 
+   customer_id, round(sum(amount_charged),2) as total_amount_billed
+FROM
+    order_tracking
+    GROUP BY customer_id
+    ORDER BY customer_id;
+    END //
+DELIMITER ;
+
+CALL total_billed();
+
+-- Creating a procedure that sums the total billed to a specific customer:
+delimiter // 
+USE practice_db 
+CREATE PROCEDURE customer_billed(IN p_customer_id integer)
+BEGIN
+SELECT
+	customer_id, round(sum(amount_charged),2) as total_amount_billed
+FROM
+	order_tracking
+WHERE
+	customer_id = p_customer_id;
+END //
+DELIMITER ;
+
+CALL customer_billed(20);
+
+-- Creating a PROCEDURE that returns the employee's id based on their name:
+DELIMITER //
+USE practice_db //
+CREATE PROCEDURE emp_id_lookup(IN p_last_name TEXT, IN p_first_name TEXT, OUT p_emp_id INTEGER)
+BEGIN
+SELECT 
+	e.emp_id
+INTO 
+	p_emp_id 
+FROM 
+	emp_info e
+WHERE 
+	e.last_name = p_last_name and
+	e.first_name = p_first_name;
+End //
+DELIMITER ;
+
+set @p_emp_id = 0;
+call practice_db.emp_id_lookup('Blythe', 'Adelaida', @p_emp_id);
+select @p_emp_id;
+
+# VIEWS:
+-- Creating a view to quickly extract the average salary from emp_info:
+CREATE OR REPLACE VIEW v_emp_avg_salary AS
+SELECT
+	round(avg(salary),2) 
+FROM
+	emp_info;
+
+SELECT 
+    *
+FROM
+    practice_db.v_emp_avg_salary;
+
+-- Create a view for orders placed in 2023:	
+CREATE VIEW orders_2023 AS
+SELECT 
+    c.customer_id, 
+    ot.order_id,
+    c.first_name,
+    c.last_name,
+    ot.order_date
+FROM
+   customers c
+       JOIN
+   order_tracking ot ON c.customer_id = ot.customer_id
+WHERE
+    order_date >= '2023-01-01'
+    order by c.customer_id;
+    
+SELECT 
+    *
+FROM
+    practice_db.orders_2023;
+	
+-- Using the previous VIEW to select how many orders were placed in 2023:
+SELECT 
+    count(customer_id)
+FROM
+    practice_db.orders_2023;
